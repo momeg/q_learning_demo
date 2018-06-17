@@ -38,7 +38,7 @@ def do_action(action):
     else:
         return
     s2 = World.player
-    r += World.score
+    r += World.score# reward is the difference between prev world score and curr W.S
     return s, action, r, s2
 
 
@@ -64,6 +64,7 @@ def run():
     alpha = 1
     t = 1
     while True:
+
         # Pick the right action
         s = World.player
         max_act, max_val = max_Q(s)
@@ -72,6 +73,8 @@ def run():
         # Update Q
         max_act, max_val = max_Q(s2)
         inc_Q(s, a, alpha, r + discount * max_val)
+
+
 
         # Check if the game has restarted
         t += 1.0
@@ -84,7 +87,7 @@ def run():
         alpha = pow(t, -0.1)
 
         # MODIFY THIS SLEEP IF THE GAME IS GOING TOO FAST.
-        time.sleep(0.1)
+        time.sleep(0.5)
 
 
 t = threading.Thread(target=run)

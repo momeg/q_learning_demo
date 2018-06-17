@@ -1,5 +1,5 @@
 __author__ = 'philippe'
-from Tkinter import *
+from tkinter import *
 master = Tk()
 
 triangle_size = 0.1
@@ -11,6 +11,7 @@ actions = ["up", "down", "left", "right"]
 
 board = Canvas(master, width=x*Width, height=y*Width)
 player = (0, y-1)
+player_prev = (0,y-1)
 score = 1
 restart = False
 walk_reward = -0.04
@@ -83,15 +84,18 @@ def try_move(dx, dy):
     score += walk_reward
     if (new_x >= 0) and (new_x < x) and (new_y >= 0) and (new_y < y) and not ((new_x, new_y) in walls):
         board.coords(me, new_x*Width+Width*2/10, new_y*Width+Width*2/10, new_x*Width+Width*8/10, new_y*Width+Width*8/10)
+        player_prev  = player
         player = (new_x, new_y)
+        board.coords(line, player[0]*Width+Width*1/2, player[1]*Width+Width*1/2,player_prev[0]*Width+Width*1/2, player_prev[1]*Width+Width*1/2)
+        print("curr : ({2},{3})    prev : ({0},{1})".format(player[0],player[1],player_prev[0],player_prev[1]))
     for (i, j, c, w) in specials:
         if new_x == i and new_y == j:
             score -= walk_reward
             score += w
             if score > 0:
-                print "Success! score: ", score
+                print ("Success! score: ", score)
             else:
-                print "Fail! score: ", score
+                print ("Fail! score: ", score)
             restart = True
             return
     #print "score: ", score
@@ -123,13 +127,18 @@ def restart_game():
 def has_restarted():
     return restart
 
-master.bind("<Up>", call_up)
-master.bind("<Down>", call_down)
-master.bind("<Right>", call_right)
-master.bind("<Left>", call_left)
+# master.bind("<Up>", call_up)
+# master.bind("<Down>", call_down)
+# master.bind("<Right>", call_right)
+# master.bind("<Left>", call_left)
+
+line = board.create_line(player[0], player[1],
+                            player_prev[0], player_prev[1], fill="red", width=1, tag="line")
+
 
 me = board.create_rectangle(player[0]*Width+Width*2/10, player[1]*Width+Width*2/10,
                             player[0]*Width+Width*8/10, player[1]*Width+Width*8/10, fill="orange", width=1, tag="me")
+
 
 board.grid(row=0, column=0)
 
